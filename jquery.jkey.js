@@ -21,6 +21,8 @@
 	
 	More infomation on http://oscargodson.com/labs/jkey
 	or fork it at https://github.com/OscarGodson/jKey
+	
+	Special thanks to Macy Abbey
 */
 (function($) {
 	$.fn.jkey = function(keyCombo,callback) {

@@ -1,56 +1,100 @@
-#jKey 1.0 Beta
-##Key shortcuts made simple
+# jKey Beta 1.0
 
-Please, view the full docs at [oscargodson.com/labs/jkey](http://oscargodson.com/labs/jkey)
+## Key shortcuts made simple
 
-###Why
-Easy. What key code is the `g` key? What about the `alt`? How do you check if `alt`, `shift`, and `a` are being pressed down at the same time?
+### Examples
 
-If you don't know these off the top of your head, jKey is probably right for you.
+#### Example 1 - Basic Usage
 
-###What
-jKey is a jQuery plugin written by Oscar Godson and Sebastian Nitu. It allows you to add key shortcuts to your web app _super_ easily.
+Below is the most basic usage. Press the a key to give you an alert. Code below:
 
-###Enough already, how?
-A simple example would be, if you wanted to add a key command to your app that alerts a user when they press `alt + a` you'd just do:
-
-    $(window).jkey('alt+a',function(){
-        console.log('You pressed alt+a!');
+    $(window).jkey('a',function(){
+    	jkey.log('You pressed the a key.');
     });
 
+##### Example 1A - Selecting An Element
 
-It also supports multiple key commands that have the same functionality, for example:
+jKey works with jQuery, so you can select any applicable element to set a key command to. Basically, any element that can be focused on such as an input or textarea can have a key command applied to it. Example: 
 
-    $(window).jkey('s, alt+s',function(){
-        console.log('You pressed either s, or alt+s!');
+    $('input').jkey('i',function(){
+    	jkey.log('You pressed the i key inside of an input.');
     });
 
-It also allows you to get the keys pressed. This is useful if you have a command that fires off an event that is different, but very similar. For example, let's say you have a sliding panel that moves left or right based on the `left` or `right` key. The animation code and events fired are the same, but have an opposite direction. In this case, you could do:
+##### Example 1B - Comboing Anything!
+
+Unlike OS key shortcuts, jKey allows you to combo just about any key supported by jKey. For example:
+
+    $(window).jkey('y+u',function(){
+    	jkey.log('You pressed y and u!');
+    });
+
+Please see the key support section below to see what's supported by jKey.
+
+#### Example 2 - Key Combos
+
+    $(window).jkey('alt+d',function(){
+    	jkey.log('Congrats, you did a key combo: alt+d');
+    });
+
+##### Example 2A - Chaining Key Combos
+
+With jKey you can intuitively connect more than just two keys for a combo. For example:
+
+    $(window).jkey('alt+shift+s',function(){
+    	jkey.log('Congrats, you did a key combo: alt+shift+s');
+    });
+
+#### Example 3 - Multiple Selections
+
+You can also do multiple selections. You can select multiple keys just as you'd select multiple elements in CSS or jQuery. Useful for trying to catch user intent, e.g. doing w and up, so a user can move a character in a game forward with either key like many computer games.
+
+    $(window).jkey('w, up',function(){
+    	jkey.log('You pressed either w, or up!');
+    });
+
+#### Example 4 - Grabbing the Keys Pressed in the Callback
+
+Sometimes when working with key shortcuts you want to have similar, but different, events fire when certain keys are pressed. For example, you want to have a sliding animation happen when the user presses up or down. The funcationality is basically the same, speed, animation, tween, AJAX event maybe, etc. However, you're a good developer and you want to keep things [DRY]( http://en.wikipedia.org/wiki/Don't_repeat_yourself). Thanks to jKey this is simple:
 
     $(window).jkey('left, right',function(key){
-        if(key == 'left') {
-            direction = 'left';
-        }
-        else {
-            direction = 'right';
-        }
-        console.log(direction);
+    	var direction;
+    	if(key == 'left'){
+    		direction = 'left';
+    	}
+    	else{
+    		direction = 'right';
+    	}
+    	jkey.log(direction);
     });
 
+#### Key Support
 
-###Key Support
-- a-z
-- 0-9
-- F1-F12
-- left, up, down, right
-- shift, ctrl, control, alt, backspace, enter
-- Mac OS X: opt, option, cmd, command, delete _[1]_, return _[2]_
-- Not on all OSs: fn, function
+*   a-z
+*   0-9
+*   f1-f12
+*   left, down, up, right
+*   esc/escape, insert, delete, home, end, pgup/pageup, pgdn/pagedown, fn/function(3)
+*   ctrl/control, alt, shift, backspace/osxdelete(1), enter/return(2), super/windows, capslk/capslock, tab, space/spacebar
+*   `, ~, -, _, =, +, [, {, ], }, \, |, ;, :, ', ", ,, <, ., &gt, /, ?
 
-If we're missing something, let us know in the bug reporter on our Github page.
+If we're missing something, let us know in the bug reporter on our [Github page](https://github.com/OscarGodson/jKey).
 
-_[1]_ - This is the Mac version of the `backspace` button. Calling either should work across OSs. Yes, there is a `delete` key on normal western keyboards as well, we're still trying to figure out how to handle this...
+(1) - This is the Mac version of the backspace button. Calling either should work across OSs. Due to conflicts with normal western keyboards, we went with "osxdelete". We suggest just using the backspace.
 
-_[2]_ - This is the Mac version of the `enter` key. Calling either should work across OSs.
+(2) - This is the Mac version of the enter key. Calling either should work across OSs.
 
-_[3]_ - This will NOT work in Mac OS X. It does not send a key event to the browser. Silly Apple.
+(3) - This will NOT work in Mac OS X. It does not send a key event to the browser. Silly Apple.
+
+#### Important Notes!
+
+##### Don't nest your key commands (for now)
+
+What we mean by this is, as of now, jKey can handle key commands like: alt + a and alt + shift + a in the same document, but when you go to do the 2nd one that includes shift, it'll run the 1st event as well. This is *most likely* not what you want.
+
+##### Special characters that have the share the same physical key, get the same key code
+
+For example, you can call : OR ;, [ OR {, etc. They are the same key to jKey.
+
+##### Function key will NOT work on Mac OS X
+
+There is nothing jKey can do about this. OS X doesn't send a key code back to the browser. Sorry!
