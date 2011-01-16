@@ -145,15 +145,16 @@
 		var x = '';
 		var y = '';
 
-		if(keyCombo.indexOf(',') > -1){ //If multiple keys are selected
+		//IE has issues here... so, we "convert" toString() :(
+		if(keyCombo.toString().indexOf(',') > -1){ //If multiple keys are selected
 			var keySplit = keyCombo.match(/[a-zA-Z0-9]+/gi);
 		}
 		else { //Else just store this single key
 			var keySplit = [keyCombo];
 		}
-	
 		for(x in keySplit){ //For each key in the array...
-			if(keySplit[x].indexOf('+') > -1){
+			//Same as above for the toString() and IE
+			if(keySplit[x].toString().indexOf('+') > -1){
 				//Key selection by user is a key combo
 				// Create a combo array and split the key combo
 				var combo = [];
