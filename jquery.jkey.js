@@ -153,6 +153,7 @@
 			var keySplit = [keyCombo];
 		}
 		for(x in keySplit){ //For each key in the array...
+			if(!keySplit.hasOwnProperty(x)) { continue; }
 			//Same as above for the toString() and IE
 			if(keySplit[x].toString().indexOf('+') > -1){
 				//Key selection by user is a key combo
