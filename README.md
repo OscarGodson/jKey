@@ -1,6 +1,8 @@
-# jKey Beta 1.0
+# jKey Beta 1.1
 
 ## Key shortcuts made simple
+
+Visit [http://oscargodson.com/labs/jkey/](http://oscargodson.com/labs/jkey/) for a live demo
 
 ### Examples
 
@@ -71,7 +73,7 @@ Sometimes when working with key shortcuts you want to have similar, but differen
 ####Example 5 - Allowing Bubbling of Events
 There might be times when you don't want to prevent keys from bubbling such as the up or down keys. By default, jKey will prevent bubbling so that you don't manually have to as *most* of the time when using jKey you don't want it to bubble and make the page go haywire. However, when you do want it to it's just a simple boolean value you set like so:
     
-				$('input').jkey('h',true,function(key){
+			$('input').jkey('h',true,function(key){
 	    jkey.log('Allowed to bubble h!');
     });
 
