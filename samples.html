@@ -71,10 +71,10 @@
 	<body>
 		<div id="wrapper">
 			<header>
-				<h1>jKey <sup>Beta 1.0</sup></h1>
+				<h1>jKey <sup>Beta 1.1</sup></h1>
 				<h2>Key shortcuts made simple</h2>
 				<h3>Downloads</h3>
-				<a href="http://oscargodson.com/labs/jkey/jquery.jkey.js">Download 1.0</a>
+				<a href="http://oscargodson.com/labs/jkey/jquery.jkey-1.1.js">Download 1.1</a>
 				<h3>Examples</h3>
 				<p>All examples below are running right now on this page, so to demo them just press the keys mentioned and they'll display in the little jKey console below. To clear the console press <kbd>alt</kbd> + <kbd>shift</kbd> + <kbd>c</kbd></p>
 			</header>
@@ -88,11 +88,11 @@ $(window).jkey('a',function(){
 				<h5>Example 1A - Selecting An Element</h5>
 				<p>jKey works with jQuery, so you can select any applicable element to set a key command to. Basically, any element that can be focused on such as an input or textarea can have a key command applied to it. Example:</p>
 				<p>
-				<strong>Type the letter "i" inside the box</strong><br>
-				<input type="text">
+				<strong>Type the letter <kbd>i</kbd> inside the box</strong><br>
+				<input id="example1a" type="text">
 				</p>
 				<pre>
-$('input').jkey('i',function(){
+$('#example1a').jkey('i',function(){
 	jkey.log('You pressed the i key inside of an input.');
 });</pre>
 				
@@ -132,6 +132,24 @@ $(window).jkey('left, right',function(key){
 		direction = 'right';
 	}
 	jkey.log(direction);
+});</pre>
+				
+				
+				<h4>Example 5 - Allowing Bubbling of Events</h4>
+				<p>There might be times when you don't want to prevent keys from bubbling such as the <kbd>up</kbd> or <kbd>down</kbd> keys. By default, jKey will prevent bubbling so that you don't manually have to as <strong>most</strong> of the time when using jKey you don't want it to bubble and make the page go haywire. However, when you do want it to it's just a simple boolean value you set like so:</p>
+				<p>
+						<strong>Try typing <kbd>g</kbd></strong><br>
+						<input id="example5_1" type="text"><br>
+						<br><strong>Now, try typing <kbd>h</kbd></strong><br>
+						<input id="example5_2" type="text">
+				</p>
+				<pre>
+$('#example5_1').jkey('g',function(key){
+	jkey.log('Blocked from typing g!');
+});
+
+$('#example5_2').jkey('h',true,function(key){
+	jkey.log('Allowed to bubble h!');
 });</pre>
 				
 				<h4 id="key-support">Key Support</h4>
@@ -184,7 +202,7 @@ $(window).jkey('left, right',function(key){
 			* Example 1A
 			* @returns {jkey.console} Will log the string provided
 			*/
-			$('input').jkey('i',function(){
+			$('#example1a').jkey('i',function(){
 				jkey.log('You pressed the i key inside of an input.');
 			});
 			
@@ -216,7 +234,7 @@ $(window).jkey('left, right',function(key){
 			* Example 3
 			* @returns {jkey.console} Will log the string provided
 			*/
-			$(window).jkey('w, up',function(){
+			$(window).jkey('w, up',true,function(){
 				jkey.log('You pressed either w, or up!');
 			});
 			
@@ -234,6 +252,21 @@ $(window).jkey('left, right',function(key){
 					direction = 'right';
 				}
 				jkey.log(direction);
+			});
+			
+			
+			/**
+			* Example 5
+			* @param key {string} The key that was pressed
+			* @param preventDefault {boolean} Want to let the event bubble up?
+			* @returns {jkey.console} Will log the string provided
+			*/
+			$('#example5_1').jkey('g',function(key){
+				jkey.log('Blocked from typing g!');
+			});
+			
+			$('#example5_2').jkey('h',true,function(key){
+				jkey.log('Allowed to bubble h!');
 			});
 			
 			//Clear's the console.

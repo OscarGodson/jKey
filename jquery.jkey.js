@@ -25,7 +25,7 @@
 	Special thanks to Macy Abbey
 */
 (function($) {
-	$.fn.jkey = function(keyCombo,callback) {
+	$.fn.jkey = function(keyCombo,options,callback) {
 		// Save the key codes to JSON object
 		var keyCodes = { 
 			/* start the a-z keys */
@@ -144,6 +144,10 @@
 
 		var x = '';
 		var y = '';
+		if(typeof options == 'function' && typeof callback == 'undefined'){
+			callback = options;
+			options = false;
+		}
 
 		//IE has issues here... so, we "convert" toString() :(
 		if(keyCombo.toString().indexOf(',') > -1){ //If multiple keys are selected
@@ -190,14 +194,16 @@
 			// Create active keys array
 			// This array will store all the keys that are currently being pressed
 			var activeKeys = [];
-			$this.keydown(function(e){
+			$this.bind('keydown',function(e){
 			// Save the current key press
 			activeKeys[ e.keyCode ] = e.keyCode;
 	
 			if($.inArray(e.keyCode, keySplit) > -1){ // If the key the user pressed is matched with any key the developer set a key code with...
 				if(typeof callback == 'function'){ //and they provided a callback function
 					callback.call(this, keyCodesSwitch[e.keyCode] ); //trigger call back and...
-					e.preventDefault(); //cancel the normal
+					if(options === false){
+						e.preventDefault(); //cancel the normal
+					}
 				}
 			}
 			else { // Else, the key did  not match which means it's either a key combo or just dosn't exist
@@ -231,13 +237,15 @@
 								}
 								activeString = activeString.substring(0, activeString.length - 1);
 								callback.call(this, activeString ); //trigger call back and...
-								e.preventDefault(); //cancel the normal
+								if(options === false){
+									e.preventDefault(); //cancel the normal
+								}
 							}
 						}
 					}
 				}
 			} // end of if in array
-			}).keyup(function(e) {
+			}).bind('keyup',function(e) {
 				// Remove the current key press
 				activeKeys[ e.keyCode ] = '';
 			});
