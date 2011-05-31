@@ -194,7 +194,7 @@
 			// Create active keys array
 			// This array will store all the keys that are currently being pressed
 			var activeKeys = [];
-			$this.unbind('keydown').bind('keydown',function(e){
+			$this.unbind('keydown.jkey').bind('keydown.jkey',function(e){
 			// Save the current key press
 			activeKeys[ e.keyCode ] = e.keyCode;
 	
@@ -245,7 +245,7 @@
 					}
 				}
 			} // end of if in array
-			}).unbind('keyup').bind('keyup',function(e) {
+			}).unbind('keyup.jkey').bind('keyup.jkey',function(e) {
 				// Remove the current key press
 				activeKeys[ e.keyCode ] = '';
 			});
