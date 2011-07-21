@@ -10,7 +10,7 @@ Visit [http://oscargodson.com/labs/jkey/](http://oscargodson.com/labs/jkey/) for
 
 Below is the most basic usage. Press the a key to give you an alert. Code below:
 
-    $(window).jkey('a',function(){
+    $(document).jkey('a',function(){
     	jkey.log('You pressed the a key.');
     });
 
@@ -26,7 +26,7 @@ jKey works with jQuery, so you can select any applicable element to set a key co
 
 Unlike OS key shortcuts, jKey allows you to combo just about any key supported by jKey. For example:
 
-    $(window).jkey('y+u',function(){
+    $(document).jkey('y+u',function(){
     	jkey.log('You pressed y and u!');
     });
 
@@ -34,7 +34,7 @@ Please see the key support section below to see what's supported by jKey.
 
 #### Example 2 - Key Combos
 
-    $(window).jkey('alt+d',function(){
+    $(document).jkey('alt+d',function(){
     	jkey.log('Congrats, you did a key combo: alt+d');
     });
 
@@ -42,7 +42,7 @@ Please see the key support section below to see what's supported by jKey.
 
 With jKey you can intuitively connect more than just two keys for a combo. For example:
 
-    $(window).jkey('alt+shift+s',function(){
+    $(document).jkey('alt+shift+s',function(){
     	jkey.log('Congrats, you did a key combo: alt+shift+s');
     });
 
@@ -50,7 +50,7 @@ With jKey you can intuitively connect more than just two keys for a combo. For e
 
 You can also do multiple selections. You can select multiple keys just as you'd select multiple elements in CSS or jQuery. Useful for trying to catch user intent, e.g. doing w and up, so a user can move a character in a game forward with either key like many computer games.
 
-    $(window).jkey('w, up',function(){
+    $(document).jkey('w, up',function(){
     	jkey.log('You pressed either w, or up!');
     });
 
@@ -58,7 +58,7 @@ You can also do multiple selections. You can select multiple keys just as you'd 
 
 Sometimes when working with key shortcuts you want to have similar, but different, events fire when certain keys are pressed. For example, you want to have a sliding animation happen when the user presses up or down. The funcationality is basically the same, speed, animation, tween, AJAX event maybe, etc. However, you're a good developer and you want to keep things [DRY]( http://en.wikipedia.org/wiki/Don't_repeat_yourself). Thanks to jKey this is simple:
 
-    $(window).jkey('left, right',function(key){
+    $(document).jkey('left, right',function(key){
     	var direction;
     	if(key == 'left'){
     		direction = 'left';
@@ -96,6 +96,9 @@ If we're missing something, let us know in the bug reporter on our [Github page]
 (3) - This will NOT work in Mac OS X. It does not send a key event to the browser. Silly Apple.
 
 #### Important Notes!
+
+##### IE Doesn't Like `$(window)`
+This isn't jKey's fault. IE doesn't allow you to attach key events to the window. jKey will try to fix it for you if you do it by accident though. If you want to attach a key event to the document/window use $(document) instead.
 
 ##### Don't nest your key commands (for now)
 

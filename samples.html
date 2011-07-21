@@ -3,6 +3,7 @@
 	<head>
 		<title>jKey Samples</title>
 		<style>
+			@import url(http://fonts.googleapis.com/css?family=Ubuntu&v2);
 		
 			/* Set HTML5 block elements block for FF <4 */
 			article, section, nav {display:block}
@@ -71,10 +72,10 @@
 	<body>
 		<div id="wrapper">
 			<header>
-				<h1>jKey <sup>Beta 1.1</sup></h1>
+				<h1>jKey <sup>Beta 1.2</sup></h1>
 				<h2>Key shortcuts made simple</h2>
 				<h3>Downloads</h3>
-				<a href="http://oscargodson.com/labs/jkey/jquery.jkey-1.1.js">Download 1.1</a>
+				<a href="http://oscargodson.com/labs/jkey/jquery.jkey-1.2.js">Download 1.2</a>
 				<h3>Examples</h3>
 				<p>All examples below are running right now on this page, so to demo them just press the keys mentioned and they'll display in the little jKey console below. To clear the console press <kbd>alt</kbd> + <kbd>shift</kbd> + <kbd>c</kbd></p>
 			</header>
@@ -82,7 +83,7 @@
 				<h4>Example 1 - Basic Usage</h4>
 				<p>Below is the most basic usage. Press the <kbd>a</kbd> key to give you an alert. Code below:</p>
 				<pre>
-$(window).jkey('a',function(){
+$(document).jkey('a',function(){
 	jkey.log('You pressed the a key.');
 });</pre>
 				<h5>Example 1A - Selecting An Element</h5>
@@ -99,31 +100,31 @@ $('#example1a').jkey('i',function(){
 				<h5>Example 1B - Comboing Anything!</h5>
 				<p>Unlike OS key shortcuts, jKey allows you to combo just about any key supported by jKey. For example:</p>
 				<pre>
-$(window).jkey('y+u',function(){
+$(document).jkey('y+u',function(){
 	jkey.log('You pressed y and u!');
 });</pre>
 				<p>Please see the <a href="#key-support">key support</a> section below to see what's supported by jKey.</p>
 				<h4>Example 2 - Key Combos</h4>
 				<pre>
-$(window).jkey('alt+d',function(){
+$(document).jkey('alt+d',function(){
 	jkey.log('Congrats, you did a key combo: alt+d');
 });</pre>
 				<h5>Example 2A - Chaining Key Combos</h5>
 				<p>With jKey you can intuitively connect more than just two keys for a combo. For example:</p>
 				<pre>
-$(window).jkey('alt+shift+s',function(){
+$(document).jkey('alt+shift+s',function(){
 	jkey.log('Congrats, you did a key combo: alt+shift+s');
 });</pre>
 				<h4>Example 3 - Multiple Selections</h4>
 				<p>You can also do multiple selections. You can select multiple keys just as you'd select multiple elements in CSS or jQuery. Useful for trying to catch user intent, e.g. doing <kbd>w</kbd> and <kbd>&uarr;</kbd>, so a user can move a character in a game forward with either key like many computer games.</p>
 				<pre>
-$(window).jkey('w, up',function(){
+$(document).jkey('w, up',function(){
 	jkey.log('You pressed either w, or up!');
 });</pre>
 				<h4>Example 4 - Grabbing the Keys Pressed in the Callback</h4>
 				<p>Sometimes when working with key shortcuts you want to have similar, but different, events fire when certain keys are pressed. For example, you want to have a sliding animation happen when the user presses <kbd>&larr;</kbd> or <kbd>&rarr;</kbd>. The funcationality is basically the same, speed, animation, tween, AJAX event maybe, etc. However, you're a good developer and you want to keep things <a href="http://en.wikipedia.org/wiki/Don't_repeat_yourself" title="Don't Repeat Yourself">DRY</a>. Thanks to jKey this is simple:</p>
 				<pre>
-$(window).jkey('left, right',function(key){
+$(document).jkey('left, right',function(key){
 	var direction;
 	if(key == 'left'){
 		direction = 'left';
@@ -172,6 +173,9 @@ $('#example5_2').jkey('h',true,function(key){
 				<p>[3] - This will NOT work in Mac OS X. It does not send a key event to the browser. Silly Apple.</p>
 				
 				<h4>Important Notes!</h4>
+				<h5>IE Doesn't Like <code>$(window)</code></h5>
+				<p>This isn't jKey's fault. IE doesn't allow you to attach key events to the window. jKey will try to fix it for you if you do it by accident though. If you want to attach a key event to the document/window use <code>$(document)</code> instead.</p>
+				
 				<h5>Don't nest your key commands (for now)</h5>
 				<p>What we mean by this is, as of now, jKey can handle key commands like:
 				<kbd>alt</kbd> + <kbd>a</kbd> and <kbd>alt</kbd> + <kbd>shift</kbd> + <kbd>a</kbd> in the same document, but when you go to do the 2nd one that includes <kbd>shift</kbd>, it'll run the 1st event as well. This is <em>most likely</em> not what you want.</p>
@@ -194,7 +198,7 @@ $('#example5_2').jkey('h',true,function(key){
 			* Example 1
 			* @returns {jkey.console} Will log the string provided
 			*/
-			$(window).jkey('a',function(){
+			$(document).jkey('a',function(){
 				jkey.log('You pressed the a key.');
 			});
 			
@@ -210,7 +214,7 @@ $('#example5_2').jkey('h',true,function(key){
 			* Example 1B
 			* @returns {jkey.console} Will log the string provided
 			*/
-			$(window).jkey('y+u',function(){
+			$(document).jkey('y+u',function(){
 				jkey.log('You pressed y and u!');
 			});
 
@@ -218,7 +222,7 @@ $('#example5_2').jkey('h',true,function(key){
 			* Example 2
 			* @returns {jkey.console} Will log the string provided
 			*/
-			$(window).jkey('alt+d',function(){
+			$(document).jkey('alt+d',function(){
 				jkey.log('Congrats, you did a key combo: alt+d');
 			});
 			
@@ -226,7 +230,7 @@ $('#example5_2').jkey('h',true,function(key){
 			* Example 2A
 			* @returns {jkey.console} Will log the string provided
 			*/
-			$(window).jkey('alt+shift+s',function(){
+			$(document).jkey('alt+shift+s',function(){
 				jkey.log('Congrats, you did a key combo: alt+shift+s');
 			});
 			
@@ -234,7 +238,7 @@ $('#example5_2').jkey('h',true,function(key){
 			* Example 3
 			* @returns {jkey.console} Will log the string provided
 			*/
-			$(window).jkey('w, up',true,function(){
+			$(document).jkey('w, up',true,function(){
 				jkey.log('You pressed either w, or up!');
 			});
 			
@@ -243,7 +247,7 @@ $('#example5_2').jkey('h',true,function(key){
 			* @param key {string} The key that was pressed
 			* @returns {jkey.console} Will log the string provided
 			*/
-			$(window).jkey('left, right',function(key){
+			$(document).jkey('left, right',function(key){
 				var direction;
 				if(key == 'left'){
 					direction = 'left';
@@ -270,7 +274,7 @@ $('#example5_2').jkey('h',true,function(key){
 			});
 			
 			//Clear's the console.
-			$(window).jkey('alt+shift+c',function(){
+			$(document).jkey('alt+shift+c',function(){
 				jkey.clear();
 			});
 			
