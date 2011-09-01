@@ -151,17 +151,24 @@
 
 		var x = '';
 		var y = '';
+		var keySplit, unbinding = false;
 		if(typeof options == 'function' && typeof callback == 'undefined'){
 			callback = options;
 			options = false;
+		} else if(keyCombo === 'unbind') { // If the unbind "method" was called on the jkey bound element
+			if(typeof options === 'string') // If a key combo was given as second argument to the unbind method
+				// We assign it to the keyCombo variable
+				keyCombo = options;
+			// We are unbinding the keyCombo passed
+			unbinding = true;
 		}
-
+		
 		//IE has issues here... so, we "convert" toString() :(
 		if(keyCombo.toString().indexOf(',') > -1){ //If multiple keys are selected
-			var keySplit = keyCombo.match(/[a-zA-Z0-9]+/gi);
+			keySplit = keyCombo.match(/[a-zA-Z0-9]+/gi);
 		}
 		else { //Else just store this single key
-			var keySplit = [keyCombo];
+			keySplit = [keyCombo];
 		}
 		for(x in keySplit){ //For each key in the array...
 			if(!keySplit.hasOwnProperty(x)) { continue; }
@@ -194,68 +201,125 @@
 		}
 			
 		var keyCodesSwitch = swapJsonKeyValues(keyCodes);
-			
+		
 		return this.each(function() {
 			$this = $(this);
+			
+			//---------------------------------------------------------------------------------
+			//
+			//															Unbind requirements
+			//
+			//---------------------------------------------------------------------------------
+			
+			var elementKeysCallbacks, elementKeysCallbacksCount, alreadyInitialized, i;
+			// Getting elements jkey_bounds $.data entry
+			elementKeysCallbacks = $this.data('jkeyBounds');
+			// Getting callbacks count
+			elementKeysCallbacksCount = $this.data('jkeyBoundsCount');
+			// We set the var that will tell us if we'll be binding the jkey events
+			// on the element, depending on if it was yet bound or not
+			alreadyInitialized = true;
+			// If it wasn't defined before
+			if(typeof elementKeysCallbacks === 'undefined') {
+				// We create an empty hash_map for its keySplit
+				elementKeysCallbacks = {};
+				// We initialize callbacks count
+				elementKeysCallbacksCount = 0;
+				// And we tell that we're going to bind jkey events
+				alreadyInitialized = false;
+			}
+			
+			// This prevents binding 2 times the same event on the same keyCombo, but will not be necessary in the end
+			// But the method will be useful for the combo to callback binding and unbind function
+			// ---------------------------------------------
+			// For each keySplit's keyCombo passed to jKey
+			for(i = 0, keyCombosCount = keySplit.length; i < keyCombosCount; i++) {
+				// If the key entry doesn't exist yet in our data hash
+				if(typeof elementKeysCallbacks[keySplit[i]] === 'undefined')
+					// We create an array that will contain it
+					elementKeysCallbacks[keySplit[i]] = [callback];
+				// If it exists yet, we push the new callback in the key's callbacks array
+				else
+					elementKeysCallbacks[keySplit[i]].push(callback);
+				
+				// We increment our callbacks count for that keyCombo
+				elementKeysCallbacksCount++;
+			}
+			
+			// We set the jkey_bounds entry to be the previous bound keys plus
+			// the keys now bound at the time it's being called
+			$this.data('jkeyBounds', elementKeysCallbacks);
+			// We store the count too
+			$this.data('jkeyBoundsCount', elementKeysCallbacksCount);
+			
+			// Now I got to migrate $.inArray to => typeof elementKeysCallbacks[e.keyCode] which contains the callback to call for the jkey event
+			// Same for the key combos, using the elementKeysCallbacks hash instead of keySplit directly
+			// And then, when it's all working well, I just have to create the unbind method that makes a simple lookup inside the
+			// elementKeysCallbacks hash in order to delete desired callbacks, all callbacks and to totally unbind the keydown/keyup.jkey events
+			// if there's no more key callbacks associated to the $this element
+			
+			//---------------------------------------------------------------------------------
 			
 			// Create active keys array
 			// This array will store all the keys that are currently being pressed
 			var activeKeys = [];
+			
 			$this.bind('keydown.jkey',function(e){
-			// Save the current key press
-			activeKeys[ e.keyCode ] = e.keyCode;
+				// Save the current key press
+				activeKeys[ e.keyCode ] = e.keyCode;
 	
-			if($.inArray(e.keyCode, keySplit) > -1){ // If the key the user pressed is matched with any key the developer set a key code with...
-				if(typeof callback == 'function'){ //and they provided a callback function
-					callback.call(this, keyCodesSwitch[e.keyCode] ); //trigger call back and...
-					if(options === false){
-						e.preventDefault(); //cancel the normal
+				if($.inArray(e.keyCode, keySplit) > -1){ // If the key the user pressed is matched with any key the developer set a key code with...
+					if(typeof callback == 'function'){ //and they provided a callback function
+						callback.call(this, keyCodesSwitch[e.keyCode] ); //trigger call back and...
+						if(options === false){
+							e.preventDefault(); //cancel the normal
+						}
 					}
 				}
-			}
-			else { // Else, the key did  not match which means it's either a key combo or just dosn't exist
-				// Check if the individual items in the key combo match what was pressed
-				for(x in keySplit){
-					if($.inArray(e.keyCode, keySplit[x]) > -1){
-						// Initiate the active variable
-						var active = 'unchecked';
+				else { // Else, the key did  not match which means it's either a key combo or just dosn't exist
+					// Check if the individual items in the key combo match what was pressed
+					for(x in keySplit){
+						if($.inArray(e.keyCode, keySplit[x]) > -1){
+							// Initiate the active variable
+							var active = 'unchecked';
 						
-						// All the individual keys in the combo with the keys that are currently being pressed
-						for(y in keySplit[x]) {
-							if(active != false) {
-								if($.inArray(keySplit[x][y], activeKeys) > -1){
-									active = true;
-								}
-								else {
-									active = false;
-								}
-							}
-						}
-						// If all the keys in the combo are being pressed, active will equal true
-						if(active === true){
-							if(typeof callback == 'function'){ //and they provided a callback function
-								
-								var activeString = '';
-								
-								for(var z in activeKeys) {
-									if (activeKeys[z] != '') {
-										activeString += keyCodesSwitch[ activeKeys[z] ] + '+';
+							// All the individual keys in the combo with the keys that are currently being pressed
+							for(y in keySplit[x]) {
+								if(active != false) {
+									if($.inArray(keySplit[x][y], activeKeys) > -1){
+										active = true;
+									}
+									else {
+										active = false;
 									}
 								}
-								activeString = activeString.substring(0, activeString.length - 1);
-								callback.call(this, activeString ); //trigger call back and...
-								if(options === false){
-									e.preventDefault(); //cancel the normal
+							}
+							// If all the keys in the combo are being pressed, active will equal true
+							if(active === true){
+								if(typeof callback == 'function'){ //and they provided a callback function
+								
+									var activeString = '';
+								
+									for(var z in activeKeys) {
+										if (activeKeys[z] != '') {
+											activeString += keyCodesSwitch[ activeKeys[z] ] + '+';
+										}
+									}
+									activeString = activeString.substring(0, activeString.length - 1);
+									callback.call(this, activeString ); //trigger call back and...
+									if(options === false){
+										e.preventDefault(); //cancel the normal
+									}
 								}
 							}
 						}
 					}
-				}
-			} // end of if in array
+				} // end of if in array
 			}).bind('keyup.jkey',function(e) {
 				// Remove the current key press
 				activeKeys[ e.keyCode ] = '';
 			});
+						
 		});
-	}
+	};
 })(jQuery);
