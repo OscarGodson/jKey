@@ -159,6 +159,8 @@
 			if(typeof options === 'string') // If a key combo was given as second argument to the unbind method
 				// We assign it to the keyCombo variable
 				keyCombo = options;
+			else
+				keyCombo = '';
 				
 			// We are unbinding the keyCombo passed
 			unbinding = true;
@@ -175,7 +177,7 @@
 			if(!keySplit.hasOwnProperty(x)) { continue; }
 			//Same as above for the toString() and IE
 			if(keySplit[x].toString().indexOf('+') > -1){
-				//Key selection by user is a key combo
+				// Key selection by user is a key combo
 				// Create a combo array and split the key combo
 				var combo = [];
 				var comboSplit = keySplit[x].split('+');
@@ -209,13 +211,7 @@
 		
 		return this.each(function() {
 			$this = $(this);
-			
-			//---------------------------------------------------------------------------------
-			//
-			//															Unbind requirements
-			//
-			//---------------------------------------------------------------------------------
-			
+						
 			var elementKeysCallbacks, elementKeysCallbacksCount, alreadyInitialized, i;
 			// Getting elements jkey_bounds $.data entry
 			elementKeysCallbacks = $this.data('jkeyBounds');
@@ -225,7 +221,8 @@
 			// on the element, depending on if it was yet bound or not
 			alreadyInitialized = true;
 			// If it wasn't defined before
-			if(typeof elementKeysCallbacks === 'undefined') {
+			if(typeof elementKeysCallbacks === 'undefined' || elementKeysCallbacks === null) {
+				console.log('Binding key, callbacks = ' + elementKeysCallbacks);
 				// We create an empty hash_map for its keySplit
 				elementKeysCallbacks = {};
 				// We initialize callbacks count
@@ -239,7 +236,7 @@
 			// If we asked to unbind
 			if(unbinding === true) {
 				// If the keys to unbind were given
-				if(keySplit) {
+				if(typeof keySplit[0] !== 'undefined') {
 					for(i = 0, keyCombosCount = keySplit.length; i < keyCombosCount; i++) {
 						if(isCombo(keyCombo, keySplit[i]))
 							index = keySplit[i].sort().join('+');
@@ -252,24 +249,28 @@
 						
 						// If there's only one callback given to unbind
 						if(typeof callback === 'function') {
+							console.log('Want to unbind a callback');
 							// We check every callback bound for this
 							for(keyCallback in elementKeysCallbacks[index]) {
-								if(callback === elementKeysCallbacks[index][keyCallback])
-									delete elementKeysCallbacks[index][keyCallback];
+								// If the callback corresponds to the one we want to remove, we set it's container to null
+								if(elementKeysCallbacks[index][keyCallback].callback === callback)
+									elementKeysCallbacks[index][keyCallback] = null;
 							}
+							// We clean the array so we don't have empty values
+							elementKeysCallbacks[index] = $.grep(elementKeysCallbacks[index], function(val) {return val;});
 						}
 						else { // Else we want to remove all the callbacks associated to the key/combo
 							delete elementKeysCallbacks[index];
 						}
 					}
 				} else { // We want to remove all
+					console.log('Remove all callbacks !');
 					elementKeysCallbacks = null;
 					elementKeysCallbacksCount = 0;
 					$this
 						.unbind('keyup.jkey')
 						.unbind('keydown.jkey');
 				}
-				return $this;
 			}
 			// Else, if we're not unbinding
 			else {
