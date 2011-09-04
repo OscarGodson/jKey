@@ -200,6 +200,10 @@
 			}
 			return output;
 		}
+		
+		function isCombo(keyCombo, keySplit) {
+			return (typeof keySplit === 'object' && keySplit.length > 0 && keyCombo.indexOf('+') > -1) ? true : false;
+		}
 			
 		var keyCodesSwitch = swapJsonKeyValues(keyCodes);
 		
@@ -230,50 +234,70 @@
 				alreadyInitialized = false;
 			}
 			
-			// Unbinding ...
+			var index, optionsHash, keyCallback;
+			
+			// If we asked to unbind
 			if(unbinding === true) {
-				// 
+				// If the keys to unbind were given
 				if(keySplit) {
-					// If there's only one callback to unbind
-					if(typeof callback === 'function') {
+					for(i = 0, keyCombosCount = keySplit.length; i < keyCombosCount; i++) {
+						if(isCombo(keyCombo, keySplit[i]))
+							index = keySplit[i].sort().join('+');
+						else
+							index = keySplit[i];
 						
-					}
-					else { // Else we want to remove all the callbacks associated to the key/combo
+						// If the key we currently check doesn't exist we go to the next loop turn
+						if(typeof elementKeysCallbacks[index] === 'undefined')
+							continue;
 						
+						// If there's only one callback given to unbind
+						if(typeof callback === 'function') {
+							// We check every callback bound for this
+							for(keyCallback in elementKeysCallbacks[index]) {
+								if(callback === elementKeysCallbacks[index][keyCallback])
+									delete elementKeysCallbacks[index][keyCallback];
+							}
+						}
+						else { // Else we want to remove all the callbacks associated to the key/combo
+							delete elementKeysCallbacks[index];
+						}
 					}
-				} else { // We want to remove all 
-					
+				} else { // We want to remove all
+					elementKeysCallbacks = null;
+					elementKeysCallbacksCount = 0;
+					$this
+						.unbind('keyup.jkey')
+						.unbind('keydown.jkey');
 				}
 				return $this;
 			}
-						
-			// For each keySplit's keyCombo passed to jKey
-			for(i = 0, keyCombosCount = keySplit.length; i < keyCombosCount; i++) {
+			// Else, if we're not unbinding
+			else {
+				// For each keySplit's keyCombo passed to jKey
+				for(i = 0, keyCombosCount = keySplit.length; i < keyCombosCount; i++) {
 				
-				var index, optionsHash;
+					// If we got an array in the keySplit entry, so we got a key combo
+					if(isCombo(keyCombo, keySplit[i])) {
+						// We sort the keySplit so if the combo is bound again using a different order for the
+						// keys, we can find it again, and we use a join for the index in the elementKeysCallbacks hash
+						index = keySplit[i].sort().join('_'); 
+						optionsHash = {'callback': callback, 'options': options, 'keys': keySplit[i]};
+					} else {
+						index = keySplit[i];
+						optionsHash = {'callback': callback, 'options': options};
+					}
 				
-				// If we got an array in the keySplit entry, so we got a key combo
-				if(typeof keySplit[i] === 'object' && keySplit[i].length > 0 && keyCombo.indexOf('+') > -1) {
-					// We sort the keySplit so if the combo is bound again using a different order for the
-					// keys, we can find it again, and we use a join for the index in the elementKeysCallbacks hash
-					index = keySplit[i].sort().join('_'); 
-					optionsHash = {'callback': callback, 'options': options, 'keys': keySplit[i]};
-					console.log('Recorded combo : ' + index);
-				} else {
-					index = keySplit[i];
-					optionsHash = {'callback': callback, 'options': options};
-				}
-				
-				// If the key entry doesn't exist yet in our data hash
-				if(typeof elementKeysCallbacks[index] === 'undefined')
-					// We create an array that will contain it with its options
-					elementKeysCallbacks[index] = [];
+					// If the key entry doesn't exist yet in our data hash
+					if(typeof elementKeysCallbacks[index] === 'undefined')
+						// We create an array that will contain it with its options
+						elementKeysCallbacks[index] = [];
 					
-				// We add the callback for the key or combo
-				elementKeysCallbacks[index].push(optionsHash);
+					// We add the callback for the key or combo
+					elementKeysCallbacks[index].push(optionsHash);
 				
-				// We increment our callbacks count for that keyCombo
-				elementKeysCallbacksCount++;
+					// We increment our callbacks count for that keyCombo
+					elementKeysCallbacksCount++;
+				}
 			}
 			
 			// We set the jkey_bounds entry to be the previous bound keys plus
@@ -281,12 +305,6 @@
 			$this.data('jkeyBounds', elementKeysCallbacks);
 			// We store the count too
 			$this.data('jkeyBoundsCount', elementKeysCallbacksCount);
-			
-			// Now I got to migrate $.inArray to => typeof elementKeysCallbacks[e.keyCode] which contains the callback to call for the jkey event
-			// Same for the key combos, using the elementKeysCallbacks hash instead of keySplit directly
-			// And then, when it's all working well, I just have to create the unbind method that makes a simple lookup inside the
-			// elementKeysCallbacks hash in order to delete desired callbacks, all callbacks and to totally unbind the keydown/keyup.jkey events
-			// if there's no more key callbacks associated to the $this element
 			
 			//---------------------------------------------------------------------------------
 			
