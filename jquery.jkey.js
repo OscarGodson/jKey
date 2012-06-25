@@ -31,7 +31,7 @@
   //We do this because IE will fail if you select window since you can't attach
   //keypresses to the window in IE
   var $this = this;
-  if(!this[0].parentNode){ $this = document; }
+  if(this[0] && !this[0].parentNode){ $this = document; }
 
 		// Save the key codes to JSON object
 		var keyCodes = { 
