@@ -153,6 +153,24 @@ $('#example5_2').jkey('h',true,function(key){
 	jkey.log('Allowed to bubble h!');
 });</pre>
 				
+			<h4>Example 6 - Unbinding previously bound keys</h4>
+			<p>
+				If you need to unbind a key that you don't want to respond anymore to one or every events you bound it to, you can do it through the 'unbind' method defined by jKey
+			</p>
+			<p>
+				Clicking this button will bind <kbd>E</kbd>, <kbd>Z</kbd> and <kbd>Alt</kbd> + <kbd>M</kbd> to execute two functions when pressed while the focus is on the text input at the below the buttons<br>
+				<input id="example6_1" type="button" value="Bind keys"><br>
+				This one will unbind the <kbd>E</kbd> key to prevent it from executing every listener function it has attached<br>
+				<input id="example6_2" type="button" value="Unbind E"><br>
+				This one will unbind the <kbd>Z</kbd> key to prevent it from executing one of the two functions attached to it<br>
+				<input id="example6_3" type="button" value="Unbind a listener from Z"><br>
+				And the last one will unbind every listener attached to any key bound in the text input below<br>
+				<input id="example6_4" type="button" value="Unbind all keys"><br>
+				Now you can try the example with the text field here :<br>
+				<input id="example6_5" type="text"><br>
+			</p>
+			
+				
 				<h4 id="key-support">Key Support</h4>
 				<ul id="key-support-list">
 					<li>a-z</li>
@@ -161,7 +179,7 @@ $('#example5_2').jkey('h',true,function(key){
 					<li>left, down, up, right</li>
 					<li>esc/escape, insert, delete, home, end, pgup/pageup, pgdn/pagedown, fn/function[3]</li>
 					<li>ctrl/control, alt, shift, backspace/osxdelete[1], enter/return[2], super/windows, capslk/capslock, tab, space/spacebar</li>
-					<li>`, ~, -, _, =, +, [, {, ], }, \, |, ;, :, ', ", ,, &lt;, ., &gt, /, ?</li>
+					<li>`, ~, -, _, =, +, [, {, ], }, \, |, ;, :, ', ", ,, &lt;, ., &gt;, /, ?</li>
 				</ul>
 				
 				<p>If we're missing something, let us know in the bug reporter on our <a href="https://github.com/OscarGodson/jKey">Github page</a>.</p>
@@ -273,6 +291,54 @@ $('#example5_2').jkey('h',true,function(key){
 				jkey.log('Allowed to bubble h!');
 			});
 			
+			var unbindExampleCallback1, unbindExampleCallback2;
+			unbindExampleCallback1 = function(key) {jkey.log('Key ' + key + ' executed first callback');};
+			unbindExampleCallback2 = function(key) {jkey.log('Key ' + key + ' executed second callback');};
+			
+			$('#example6_1')
+				.click(function() {
+					$('#example6_5').jkey('e, z', unbindExampleCallback1);
+					$('#example6_5').jkey('alt+m', unbindExampleCallback1);
+					$('#example6_5').jkey('e, z', unbindExampleCallback2);
+					$('#example6_5').jkey('alt+m', unbindExampleCallback2);
+				})
+				.trigger('click');
+			
+				/**
+				* Example 6 - 1
+				*	@param 'unbind' {string} The unbind method of jKey
+				* @param key {string} The key to unbind listeners from
+				* @returns {jkey.unbind} The E key will be unbound 
+				*/
+			$('#example6_2')
+				.click(function() {
+					$('#example6_5').jkey('unbind', 'e');
+				});
+
+				/**
+				* Example 6 - 1
+				*	@param 'unbind' {string} The unbind method of jKey
+				* @param key {string} The key to unbind listeners from
+				* @param callback {function} The callback to unbind from the key
+				* @returns {jkey.unbind} The first callback from the Z key will be unbound 
+				*/			
+			$('#example6_3')
+			.click(function() {
+				$('#example6_5').jkey('unbind', 'z', unbindExampleCallback1);
+			});
+			
+			/**
+			* Example 6 - 1
+			*	@param 'unbind' {string} The unbind method of jKey
+			* @returns {jkey.unbind} All the keys bound to the text input will be unbound
+			*/
+			$('#example6_4')
+			.click(function() {
+				$('#example6_5').jkey('unbind');
+			});
+
+			
+			
 			//Clear's the console.
 			$(document).jkey('alt+shift+c',function(){
 				jkey.clear();
@@ -291,7 +357,7 @@ $('#example5_2').jkey('h',true,function(key){
 				clear:function(){
 					$console.find('ol').empty();
 				}
-			}
+			};
 			
 			//Welcome message!
 			jkey.log('Welcome to the jKey plugin documentation. Here is where you will get logs from the examples above. To clear the console press alt+shift+c. Have fun!');
