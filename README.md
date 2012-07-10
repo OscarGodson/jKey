@@ -2,7 +2,7 @@
 
 ## Key shortcuts made simple
 
-Visit [http://oscargodson.com/labs/jkey/](http://oscargodson.com/labs/jkey/) for a live demo
+Visit [http://oscargodson.github.com/jKey/](http://oscargodson.github.com/jKey/) for a live demo
 
 ### Examples
 
