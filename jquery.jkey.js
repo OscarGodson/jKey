@@ -168,7 +168,7 @@
 
 		//IE has issues here... so, we "convert" toString() :(
 		if(keyCombo.toString().indexOf(',') > -1){ //If multiple keys are selected
-			var keySplit = keyCombo.match(/[a-zA-Z0-9]+/gi);
+			var keySplit = keyCombo.match(/[a-zA-Z0-9\+]+/gi);
 		}
 		else { //Else just store this single key
 			var keySplit = [keyCombo];
@@ -189,7 +189,7 @@
 			}
 			else {
 				//Otherwise, it's just a normal, single key command
-				keySplit[x] = keyCodes[ keySplit[x] ];
+				keySplit[x] = [keyCodes[ keySplit[x] ]];
 			}
 		}
 			
@@ -214,54 +214,50 @@
 			$this.bind('keydown.jkey',function(e){
 			// Save the current key press
 			activeKeys[ e.keyCode ] = e.keyCode;
+
+			// We might have lost some key-ups (e.g. when Alt-Tabbing).
+			// Check if Shift/Ctrl/Alt are still pressed.
+			activeKeys[keyCodes['shift']] = e.shiftKey ? keyCodes['shift'] : '';
+			activeKeys[keyCodes['ctrl']] = e.ctrlKey ? keyCodes['ctrl'] : '';
+			activeKeys[keyCodes['alt']] = e.altKey ? keyCodes['alt'] : '';
 	
-			if($.inArray(e.keyCode, keySplit) > -1){ // If the key the user pressed is matched with any key the developer set a key code with...
-				if(typeof callback == 'function'){ //and they provided a callback function
-					callback.call(this, keyCodesSwitch[e.keyCode] ); //trigger call back and...
-					if(options === false){
-						e.preventDefault(); //cancel the normal
-					}
-				}
-			}
-			else { // Else, the key did  not match which means it's either a key combo or just dosn't exist
-				// Check if the individual items in the key combo match what was pressed
-				for(x in keySplit){
-					if($.inArray(e.keyCode, keySplit[x]) > -1){
-						// Initiate the active variable
-						var active = 'unchecked';
-						
-						// All the individual keys in the combo with the keys that are currently being pressed
-						for(y in keySplit[x]) {
-							if(active != false) {
-								if($.inArray(keySplit[x][y], activeKeys) > -1){
-									active = true;
-								}
-								else {
-									active = false;
-								}
+			// Initiate the active variable
+			var active = false;
+			// Check if the individual items in the key combo match what was pressed
+			for(x in keySplit){
+				if(active === false && $.inArray(e.keyCode, keySplit[x]) > -1){
+					active = 'undefined';
+					// All the individual keys in the combo with the keys that are currently being pressed
+					for(y in keySplit[x]) {
+						if(active != false) {
+							if($.inArray(keySplit[x][y], activeKeys) > -1){
+								active = true;
+							}
+							else {
+								active = false;
 							}
 						}
-						// If all the keys in the combo are being pressed, active will equal true
-						if(active === true){
-							if(typeof callback == 'function'){ //and they provided a callback function
-								
-								var activeString = '';
-								
-								for(var z in activeKeys) {
-									if (activeKeys[z] != '') {
-										activeString += keyCodesSwitch[ activeKeys[z] ] + '+';
-									}
+					}
+					// If all the keys in the combo are being pressed, active will equal true
+					if(active === true){
+						if(typeof callback == 'function'){ //and they provided a callback function
+							
+							var activeString = '';
+							
+							for(var z in activeKeys) {
+								if (activeKeys[z] != '') {
+									activeString += keyCodesSwitch[ activeKeys[z] ] + '+';
 								}
-								activeString = activeString.substring(0, activeString.length - 1);
-								callback.call(this, activeString ); //trigger call back and...
-								if(options === false){
-									e.preventDefault(); //cancel the normal
-								}
+							}
+							activeString = activeString.substring(0, activeString.length - 1);
+							callback.call(this, activeString ); //trigger call back and...
+							if(options === false){
+								e.preventDefault(); //cancel the normal
 							}
 						}
 					}
 				}
-			} // end of if in array
+			} 
 			}).bind('keyup.jkey',function(e) {
 				// Remove the current key press
 				activeKeys[ e.keyCode ] = '';
