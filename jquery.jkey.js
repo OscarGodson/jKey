@@ -214,6 +214,12 @@
 			$this.bind('keydown.jkey',function(e){
 			// Save the current key press
 			activeKeys[ e.keyCode ] = e.keyCode;
+
+			// We might have lost some key-ups (e.g. when Alt-Tabbing).
+			// Check if Shift/Ctrl/Alt are still pressed.
+			activeKeys[keyCodes['shift']] = e.shiftKey ? keyCodes['shift'] : '';
+			activeKeys[keyCodes['ctrl']] = e.ctrlKey ? keyCodes['ctrl'] : '';
+			activeKeys[keyCodes['alt']] = e.altKey ? keyCodes['alt'] : '';
 	
 			if($.inArray(e.keyCode, keySplit) > -1){ // If the key the user pressed is matched with any key the developer set a key code with...
 				if(typeof callback == 'function'){ //and they provided a callback function
