@@ -184,7 +184,7 @@
 				// Save the key codes for each element in the key combo
 				for(y in comboSplit){
 					combo[y] = keyCodes[ comboSplit[y] ];
-				}
+				} 
 				keySplit[x] = combo;
 			}
 			else {
@@ -217,7 +217,7 @@
 	
 			if($.inArray(e.keyCode, keySplit) > -1){ // If the key the user pressed is matched with any key the developer set a key code with...
 				if(typeof callback == 'function'){ //and they provided a callback function
-					callback.call(this, keyCodesSwitch[e.keyCode] ); //trigger call back and...
+					callback.call(this, keyCodesSwitch[e.keyCode], e ); //trigger call back and...
 					if(options === false){
 						e.preventDefault(); //cancel the normal
 					}
@@ -253,7 +253,7 @@
 									}
 								}
 								activeString = activeString.substring(0, activeString.length - 1);
-								callback.call(this, activeString ); //trigger call back and...
+								callback.call(this, activeString, e); //trigger call back and...
 								if(options === false){
 									e.preventDefault(); //cancel the normal
 								}
