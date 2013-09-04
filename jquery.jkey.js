@@ -161,9 +161,34 @@
 
 		var x = '';
 		var y = '';
-		if(typeof options == 'function' && typeof callback == 'undefined'){
-			callback = options;
-			options = false;
+
+		var exceptSelector = ''; //except selector
+		var preventDefault = false; //whether prevents the default event 
+
+		//Cover the original parameters of logic, but does not affect the original call way
+		switch(typeof options)
+		{
+			case 'function' :
+			{
+				callback = options;
+				break;
+			}
+			case 'string' :
+			{
+				exceptSelector = options;
+				break;
+			}
+			case 'boolean' :
+			{
+				preventDefault = options;
+				break;
+			}
+			case 'object' :
+			{
+				exceptSelector = options.exceptSelector;
+				preventDefault = options.preventDefault;
+				break;;
+			}
 		}
 
 		//IE has issues here... so, we "convert" toString() :(
@@ -211,14 +236,21 @@
 			// Create active keys array
 			// This array will store all the keys that are currently being pressed
 			var activeKeys = [];
-			$this.bind('keydown.jkey',function(e){
+			$this.bind('keydown.jkey',function(e)
+			{
+				//determine whether in the exception 
+				if(exceptSelector && $(e.target).is(exceptSelector))
+				{
+					return;
+				}
+
 			// Save the current key press
 			activeKeys[ e.keyCode ] = e.keyCode;
 	
 			if($.inArray(e.keyCode, keySplit) > -1){ // If the key the user pressed is matched with any key the developer set a key code with...
 				if(typeof callback == 'function'){ //and they provided a callback function
 					callback.call(this, keyCodesSwitch[e.keyCode], e ); //trigger call back and...
-					if(options === false){
+					if(preventDefault === false){
 						e.preventDefault(); //cancel the normal
 					}
 				}
@@ -254,7 +286,7 @@
 								}
 								activeString = activeString.substring(0, activeString.length - 1);
 								callback.call(this, activeString, e); //trigger call back and...
-								if(options === false){
+								if(preventDefault === false){
 									e.preventDefault(); //cancel the normal
 								}
 							}
