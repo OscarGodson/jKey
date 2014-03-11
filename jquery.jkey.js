@@ -241,6 +241,17 @@
 								}
 							}
 						}
+						
+						//Check if lenght of keycombo equals lenght of activeKeys.
+						//This way we can nest our keycombos
+						var keyCount = 0;
+                            			for (var i = 0; i < activeKeys.length; i++) {
+                                			if (activeKeys[i] !== undefined && activeKeys[i] !== null && activeKeys[i] !== "") {
+                                    				keyCount++;
+                                			}
+                            			}
+                            			if (active && keySplit[x].length !== keyCount) { active = false; }
+						
 						// If all the keys in the combo are being pressed, active will equal true
 						if(active === true){
 							if(typeof callback == 'function'){ //and they provided a callback function
