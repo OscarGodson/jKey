@@ -90,6 +90,7 @@
     'shift' : 16,
     'ctrl' : 17,
     'control' : 17,
+    'osxoperacmd' : 17,
     'alt' : 18,
     'option' : 18, //Mac OS key
     'opt' : 18, //Mac OS key
@@ -111,6 +112,8 @@
     'capslk':20,
     'super':91,
     'windows':91,
+    'lcmd':91,
+    'rcmd':93,
     'insert':45,
     'delete':46, //NOT THE OS X DELETE KEY!
     'home':36,
@@ -263,8 +266,13 @@
 				}
 			} // end of if in array
 			}).bind('keyup.jkey',function(e) {
-				// Remove the current key press
-				activeKeys[ e.keyCode ] = '';
+                if (e.keyCode === 91 || e.keyCode === 93 || e.keyCode === 17 || e.keyCode === 224) {
+                    // remove all active keys – those keys prevent keyup
+                    activeKeys = [];
+                } else {
+                    // Remove the current key press
+                    activeKeys[ e.keyCode ] = '';
+                }
 			});
 		});
 	}
